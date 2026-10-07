@@ -174,6 +174,12 @@ section{scroll-margin-top:24px}
 .work.rv.in .m{transform:none}
 .work.rv.in .meta{opacity:1;transform:none}
 
+/* ---------- confidentiality notice (end of the portfolio) ---------- */
+.notice{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 20px;margin-top:clamp(56px,7vw,96px);padding:24px 0 0;border-top:1px solid var(--rule);max-width:880px}
+.notice::before{content:"";grid-row:1 / 3;width:3px;background:var(--red)}
+.notice .eyebrow{color:var(--red-text)}
+.notice p{margin:0;font-size:15px;line-height:1.65;color:var(--ink-2);max-width:72ch}
+
 /* ---------- about ---------- */
 .about{background:var(--paper-2);transition:background-color .5s var(--ease-io)}
 .about .wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(32px,6vw,96px)}
@@ -204,7 +210,7 @@ section{scroll-margin-top:24px}
 /* ---------- footer (extra bottom room so the floating menu never covers it) ---------- */
 footer{padding-block:36px calc(104px + env(safe-area-inset-bottom,0px))}
 footer .wrap{display:flex;justify-content:center;text-align:center}
-footer small{font:400 12px/1.4 var(--mono);color:var(--ink-2);letter-spacing:.06em}
+footer small{font:400 12px/1.6 var(--mono);color:var(--ink-2);letter-spacing:.06em}
 
 /* ---------- viewer: full screen on the dark ground, caption bar underneath ---------- */
 .lb{border:0;padding:0;margin:0;width:100%;height:100%;max-width:none;max-height:none;background:#0E0E0F;color:#F4F2EE;overflow:hidden}
@@ -280,6 +286,10 @@ footer small{font:400 12px/1.4 var(--mono);color:var(--ink-2);letter-spacing:.06
     </div>
     <div class="filters" id="filters" role="group" aria-label="Filter by category"></div>
     <div id="groups"></div>
+    <aside class="notice" aria-label="Confidentiality notice">
+      <div class="eyebrow">Confidentiality notice</div>
+      <p>The works on this page were produced by the members of CNT Communications &amp; Multimedia for CNT Promo &amp; Ads Specialists, Inc. and its clients. They are shown for portfolio review only. Do not copy, download, share or reproduce any part of them without written permission from CNT. Client names, logos and brands belong to their respective owners.</p>
+    </aside>
   </div>
 </section>
 
@@ -312,7 +322,7 @@ footer small{font:400 12px/1.4 var(--mono);color:var(--ink-2);letter-spacing:.06
 
 <footer>
   <div class="wrap">
-    <small>© <span id="yr">2026</span> CNT Communications &amp; Multimedia</small>
+    <small>© <span id="yr">2026</span> CNT Communications &amp; Multimedia. All works confidential; not to be reproduced without permission.</small>
   </div>
 </footer>
 
@@ -495,7 +505,7 @@ const WORKS = [
       ${w.title?`<div class="meta">${w.client?`<div class="kick">${esc(w.client)}</div>`:''}<h3>${esc(w.title)}</h3></div>`:''}</button>`;
   }
   function bigMedia(w){
-    if(isVideo(w.src)) return `<video src="${esc(w.src)}" ${w.poster?`poster="${esc(w.poster)}"`:''} controls autoplay playsinline></video>`;
+    if(isVideo(w.src)) return `<video src="${esc(w.src)}" ${w.poster?`poster="${esc(w.poster)}"`:''} controls controlslist="nodownload" disablepictureinpicture autoplay playsinline></video>`;
     return '';
   }
 
@@ -775,8 +785,13 @@ const WORKS = [
   function replay(scope){
     scope.querySelectorAll('.rv').forEach(el=>{ el.classList.remove('in'); io.unobserve(el); io.observe(el); });
   }
-  document.querySelectorAll('.reel, .sec-head, .filters, .g-head, .work, .more, .about .wrap > div, .disc-list li, .contact .wrap > div, footer .wrap')
+  document.querySelectorAll('.reel, .sec-head, .filters, .g-head, .work, .more, .about .wrap > div, .disc-list li, .notice, .contact .wrap > div, footer .wrap')
     .forEach(el=>{ el.classList.add('rv'); io.observe(el); });
+
+  /* ---------------- protect the work (a deterrent, not a lock) ---------------- */
+  // No right-click save or drag-out on portfolio media; the confidentiality notice says the rest.
+  document.addEventListener('contextmenu',e=>{ if(e.target.closest('#groups, #lbFrame, #reelSlot')) e.preventDefault(); });
+  document.addEventListener('dragstart',e=>{ if(e.target.closest('#groups, #lbFrame, #reelSlot')) e.preventDefault(); });
 
   /* ---------------- small things ---------------- */
   const pre=[...document.querySelectorAll('.bars.pre')];
